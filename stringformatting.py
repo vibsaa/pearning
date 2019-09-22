@@ -28,3 +28,7 @@ name="tom"
 greet="how are you {name}"
 greet_vibs=greet.format(name="vibs")
 print(greet_vibs)
+#or you can directly write like
+name="newname"
+greet="how are you {}"
+print(greet.format(name)) #directly written the print command for that which reduced the no. of variables
