@@ -2,6 +2,9 @@ import serial
 import time
 import tkinter as tk
 from tkinter import ttk 
+from matplotlib import pyplot as plt
+from matplotlib import style
+import numpy as np
 
 #ser=serial.Serial('COM9', baudrate=9600, timeout=1)
 #i=0
@@ -40,13 +43,30 @@ def convert():
         csv_op.write(f"{csv_val}\n")
         csv_op.close()
     
+def plotg():
+    style.use('ggplot')
+
+    x,y = np.loadtxt('datapoints.txt',
+                     unpack=True,
+                    delimiter = ',')
+
+    plt.plot(x,y)
+
+    plt.title('CHARACTERSTIC CURVE')
+    plt.ylabel('Id(Amperes)')
+    plt.xlabel('Vd(volts)')
+
+    plt.show()
+
 
 root=tk.Tk()
 root.title("WELCOME TO CURVE TRACER FOR DIODES")
 start_button=ttk.Button(root,text="start",command=start)
 start_button.pack(side='left', fill='x',expand=True)
+convert_button=ttk.Button(root,text="convert",command=convert)
+convert_button.pack(side='left', fill='x',expand=True)
+plot_button=ttk.Button(root,text="plot",command=plotg)
+plot_button.pack(side='left', fill='x',expand=True)
 quit_button=ttk.Button(root,text='kill',command=root.destroy)
 quit_button.pack(side='left', fill='x',expand=True)
-convert_button=ttk.Button(root,text="start",command=convert)
-convert_button.pack(side='left', fill='x',expand=True)
 root.mainloop()
