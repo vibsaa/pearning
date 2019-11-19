@@ -15,7 +15,7 @@ def start():
     i=0
     ser.write(b's')
     data=open('points.txt','w')
-    while(i<67):
+    while(i<240):
         avrdata=ser.readline().decode('ascii')
         data.write(avrdata)
         i=i+1
@@ -48,7 +48,7 @@ def convert():
         idadc=int(data_sep[1])
         #print(f" {vdadc} , {idadc} ")
         voltage=vdadc*.00654
-        current=(idadc*.00654)/6.67
+        current=((idadc*.00654)/6.67)/4.7
         #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")
         csv_val=','.join([str(voltage),str(current)])
         csv_op=open('datapoints.txt','a')
@@ -63,7 +63,7 @@ def plotg():
                      unpack=True,
                     delimiter = ',')
 
-    plt.plot(x,y)
+    plt.scatter(x,y)
 
     plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
     plt.ylabel('Id(Amperes)')

@@ -1,3 +1,4 @@
+"""to plot data from a csv file"""
 from matplotlib import pyplot as plt
 from matplotlib import style
 import numpy as np
@@ -9,7 +10,7 @@ x,y = np.loadtxt('datapoints.txt',
                  unpack=True,
                  delimiter = ',')
 
-plt.plot(x,y)
+plt.scatter(x,y)
 
 plt.title('CHARACTERSTIC CURVE')
 plt.ylabel('Id(Amperes)')
