@@ -1,7 +1,9 @@
 import serial
 import time
 import tkinter as tk
-from tkinter import ttk 
+from tkinter import ttk
+from tkinter import *
+from tkinter import messagebox
 from matplotlib import pyplot as plt
 from matplotlib import style
 import numpy as np
@@ -18,6 +20,17 @@ def start():
         data.write(avrdata)
         i=i+1
     data.close()
+    popup("Reading process is finished, Please proceed!")
+    
+
+def popup(message1):
+    window= Tk()
+    messagebox.showinfo('System Message', f'{message1}')
+
+    window.deiconify()
+    window.destroy()
+    
+    
 
 def convert():
     csv_data=open('points.txt','r')
@@ -52,7 +65,7 @@ def plotg():
 
     plt.plot(x,y)
 
-    plt.title('CHARACTERSTIC CURVE')
+    plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
     plt.ylabel('Id(Amperes)')
     plt.xlabel('Vd(volts)')
 
@@ -61,8 +74,15 @@ def plotg():
 
 root=tk.Tk()
 root.title("WELCOME TO CURVE TRACER FOR DIODES")
+diode_name=tk.StringVar()
+name_label=ttk.Label(root, text='Enter Diode Name:')
+name_label.pack(side='left', padx=(0,10))
+name_entry=ttk.Entry(root,width=15,textvariable=diode_name)
+name_entry.pack(side='left')
+name_entry.focus()
 start_button=ttk.Button(root,text="start",command=start)
 start_button.pack(side='left', fill='x',expand=True)
+popup("Don't act oversmart and ruin everything, instead follow the sequence of buttons. After Pressing start button wait for a popup to proceed! ")
 convert_button=ttk.Button(root,text="convert",command=convert)
 convert_button.pack(side='left', fill='x',expand=True)
 plot_button=ttk.Button(root,text="plot",command=plotg)
