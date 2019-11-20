@@ -8,6 +8,9 @@ from matplotlib import pyplot as plt
 from matplotlib import style
 from scipy.optimize import curve_fit
 import numpy as np
+from scipy import polyfit
+from matplotlib.widgets import Cursor
+import mplcursors
 
 #ser=serial.Serial('COM9', baudrate=9600, timeout=1)
 #i=0
@@ -58,32 +61,33 @@ def convert():
         csv_op.close()
     
 def plotg():
-    #Fitting function
     def func(x, a, b):
         return a*np.exp(b*x)
-    #return a*x+b
+
+    quadratic = lambda x,p: p[0]*(x**2)+p[1]*x+p[2]
+
+    fig = plt.figure(figsize=(8, 6))
+    ax = fig.add_subplot(111, facecolor='#CFFBFF')
 
 
-    style.use('ggplot')
-    #Experimental x and y data points   
     x,y = np.loadtxt('datapoints.txt',
-                     unpack=True,
+                    unpack=True,
                     delimiter = ',')
 
     #Plot experimental data points
-    plt.plot(x, y, 'r+', label='experimental-data')
- 
- 
- 
-    #Perform the curve-fit
+    cursor = Cursor(ax, useblit=False, color='black', linewidth=0.5)
+    ax.plot(x, y, 'r+', label='experimental-data')
+    fitcoeffs=polyfit(x,y,2)
+    print(fitcoeffs)
+
+
+    xFit = np.arange(0.0, 1.20, 0.01)
     popt, pcov = curve_fit(func, x, y)
     print(popt)
- 
-    #x values for the fitted function   
-    xFit = np.arange(0.0, 1.20, 0.01)
- 
     #Plot the fitted function
-    plt.plot(xFit, func(xFit, *popt), 'g', label='fit params: a=%5.3f, b=%5.3f' % tuple(popt))
+    ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt)) 
+    mplcursors.cursor(multiple=True).connect(
+        "add", lambda sel: sel.annotation.draggable(False))
     plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
     plt.xlabel('Vd(volts)')
     plt.ylabel('Id(amperes)')
