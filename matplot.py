@@ -6,7 +6,7 @@ import numpy as np
 
 style.use('ggplot')
 
-x,y = np.loadtxt('datapoints.txt',
+x,y = np.loadtxt('data123.txt',
                  unpack=True,
                  delimiter = ',')
 
