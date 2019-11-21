@@ -1,0 +1,5 @@
+('G:\\pearning\\pearning\\gui_dev_cts\\finalv1.1\\build\\cts_pyserial_ver2\\pyserial-3.4-py3.7.egg',
+ None,
+ {'*.pyw', 'EGG-INFO', '*.pyd', '*.pyc', '*.py', '*.cp37-win_amd64.pyd'},
+ 'DATA',
+ [])
