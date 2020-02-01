@@ -11,6 +11,7 @@ import numpy as np
 from scipy import polyfit
 from matplotlib.widgets import Cursor
 import mplcursors
+from tqdm import tqdm_gui
 
 #ser=serial.Serial('COM9', baudrate=9600, timeout=1)
 #i=0
@@ -19,7 +20,8 @@ def start():
     i=0
     ser.write(b's')
     data1=open('points.txt','w')
-    while(i<240):
+    #while(i<240):
+    for i in tqdm_gui(range(0,241)):
         avrdata=ser.readline().decode('ascii')
         data1.write(avrdata)
         i=i+1
