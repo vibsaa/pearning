@@ -86,7 +86,7 @@ def plotg():
     xFit = np.arange(0.0, 3.3, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819
     popt, pcov = curve_fit(func, x, y)
     print(popt)
-    #Plot the fitted function
+    #Plot the fitted function 
     ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt)) 
     mplcursors.cursor(multiple=True).connect(
         "add", lambda sel: sel.annotation.draggable(False))
