@@ -84,7 +84,7 @@ def plotg():
     x,y = np.loadtxt('datapoints.txt',
                     unpack=True,
                     delimiter = ',')
-
+        
     #Plot experimental data points
     cursor = Cursor(ax, useblit=False, color='black', linewidth=0.5)
     ax.plot(x, y, 'r+', label='experimental-data')
@@ -100,7 +100,7 @@ def plotg():
     fig.canvas.mpl_connect('pick_event', onpick)
     mplcursors.cursor(multiple=True).connect(
         "add", lambda sel: sel.annotation.draggable(False))
-    #plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
+    plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
     plt.xlabel('Vd(volts)')
     plt.ylabel('Id(amperes)')
     plt.legend()
@@ -112,6 +112,7 @@ root=Tk()
 
 root.title("WELCOME TO CURVE TRACER FOR DIODES ")
 diode_name=tk.StringVar()
+#rd=tk.StringVar()
 name_label=ttk.Label(root, text='Enter Diode Name:')
 name_label.pack(side='left', padx=(0,10))
 name_entry=ttk.Entry(root,width=15,textvariable=diode_name)
@@ -126,4 +127,8 @@ plot_button=ttk.Button(root,text="plot",command=plotg)
 plot_button.pack(side='left', fill='x',expand=True)
 quit_button=ttk.Button(root,text='kill',command=root.destroy)
 quit_button.pack(side='left', fill='x',expand=True)
+"""T = tk.Text(root, height=4, width=50)
+T.pack(side=tk.LEFT, fill=tk.Y)
+quote = f"value of dynamic resistance is{rd}"
+T.insert(tk.END, quote)"""
 root.mainloop()

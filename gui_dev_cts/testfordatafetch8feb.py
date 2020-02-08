@@ -37,7 +37,7 @@ def plotg():
     x,y = np.loadtxt('datapoints.txt',
                     unpack=True,
                     delimiter = ',')
-
+        
     #Plot experimental data points
     cursor = Cursor(ax, useblit=False, color='black', linewidth=0.5)
     ax.plot(x, y, 'r+', label='experimental-data')
