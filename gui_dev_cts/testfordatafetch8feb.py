@@ -29,11 +29,13 @@ def plotg():
         ydata = thisline.get_ydata()
         ind = event.ind
         points = tuple(zip(xdata[ind], ydata[ind]))
-        slope=(points[1][1]-points[0][1])/(points[1][0]-points[0][0])
+        slope=(points[-1][1]-points[0][1])/(points[-1][0]-points[0][0])
         rd=1/slope
+        vt=points[0][0]-(points[0][1]/slope)
         #print('onpick points:', points)
         print('slope:', slope)
         print('Dynamic resistance:', rd)
+        print('Threshold voltage:', vt)
     x,y = np.loadtxt('datapoints.txt',
                     unpack=True,
                     delimiter = ',')
@@ -49,7 +51,7 @@ def plotg():
     popt, pcov = curve_fit(func, x, y)
     print(popt)
     #Plot the fitted function 
-    ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt), picker=5) 
+    ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt), picker=10) 
     fig.canvas.mpl_connect('pick_event', onpick)
     mplcursors.cursor(multiple=True).connect(
         "add", lambda sel: sel.annotation.draggable(False))

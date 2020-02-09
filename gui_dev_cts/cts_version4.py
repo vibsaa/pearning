@@ -76,11 +76,13 @@ def plotg():
         ydata = thisline.get_ydata()
         ind = event.ind
         points = tuple(zip(xdata[ind], ydata[ind]))
-        slope=(points[1][1]-points[0][1])/(points[1][0]-points[0][0])
+        slope=(points[-1][1]-points[0][1])/(points[-1][0]-points[0][0])
         rd=1/slope
+        vt=points[0][0]-(points[0][1]/slope)
         #print('onpick points:', points)
         print('slope:', slope)
         print('Dynamic resistance:', rd)
+        print('Threshold voltage:', vt)
     x,y = np.loadtxt('datapoints.txt',
                     unpack=True,
                     delimiter = ',')
@@ -92,20 +94,19 @@ def plotg():
     print(fitcoeffs)
 
 
-    xFit = np.arange(0.0, 3.3, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819 &=3.5 for LED
+    xFit = np.arange(0.0, 3.4, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819 &=3.5 for LED
     popt, pcov = curve_fit(func, x, y)
     print(popt)
     #Plot the fitted function 
-    ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt), picker=5) 
+    ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt), picker=10) 
     fig.canvas.mpl_connect('pick_event', onpick)
     mplcursors.cursor(multiple=True).connect(
         "add", lambda sel: sel.annotation.draggable(False))
-    plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
+    #plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
     plt.xlabel('Vd(volts)')
     plt.ylabel('Id(amperes)')
     plt.legend()
     plt.show()
-
 
 root=Tk()
 
