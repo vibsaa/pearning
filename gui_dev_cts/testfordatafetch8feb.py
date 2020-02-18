@@ -16,7 +16,7 @@ from scipy.misc import derivative
 
 def plotg():
     def func(x, a, b):
-        return a*np.exp(b*x)
+        return a*np.exp(b*x)-.0002
 
     quadratic = lambda x,p: p[0]*(x**2)+p[1]*x+p[2]
 
@@ -47,11 +47,11 @@ def plotg():
     print(fitcoeffs)
 
 
-    xFit = np.arange(0.0, 3.3, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819 &=3.5 for LED
+    xFit = np.arange(0.0, 3.4, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819 &=3.5 for LED
     popt, pcov = curve_fit(func, x, y)
     print(popt)
     #Plot the fitted function 
-    ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt), picker=10) 
+    ax.plot(xFit, func(xFit, *popt), 'g', label='fit params(ae^bx): a=%5.3f, b=%5.3f' % tuple(popt), picker=100) 
     fig.canvas.mpl_connect('pick_event', onpick)
     mplcursors.cursor(multiple=True).connect(
         "add", lambda sel: sel.annotation.draggable(False))
