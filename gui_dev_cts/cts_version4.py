@@ -13,9 +13,9 @@ from matplotlib.widgets import Cursor
 import mplcursors
 from tqdm import tqdm_gui
 from scipy.misc import derivative
-
+vt=0
 def start():
-    ser=serial.Serial('COM3', baudrate=9600, timeout=1)
+    ser=serial.Serial('COM4', baudrate=9600, timeout=1)
     i=0
     ser.write(b's')
     data1=open('points.txt','w')
@@ -54,7 +54,7 @@ def convert():
         #print(f" {vdadc} , {idadc} ")
         voltage=vdadc*.00654
         current=((idadc*.00654)/6.67)/4.7
-        #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")
+        #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")d
         csv_val=','.join([str(voltage),str(current)])
         csv_op=open('datapoints.txt','a')
         #print(csv_val)
@@ -71,6 +71,7 @@ def plotg():
     ax = fig.add_subplot(111, facecolor='#CFFBFF')
     
     def onpick(event):
+        global vt
         thisline = event.artist
         xdata = thisline.get_xdata()
         ydata = thisline.get_ydata()
@@ -83,6 +84,7 @@ def plotg():
         print('slope:', slope)
         print('Dynamic resistance:', rd)
         print('Threshold voltage:', vt)
+        #return vt
     x,y = np.loadtxt('datapoints.txt',
                     unpack=True,
                     delimiter = ',')
@@ -94,7 +96,7 @@ def plotg():
     print(fitcoeffs)
 
 
-    xFit = np.arange(0.0, 3.4, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819 &=3.5 for LED
+    xFit = np.arange(0.0, 3.5, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819 &=3.5 for LED
     popt, pcov = curve_fit(func, x, y)
     print(popt)
     #Plot the fitted function 
@@ -102,30 +104,43 @@ def plotg():
     fig.canvas.mpl_connect('pick_event', onpick)
     mplcursors.cursor(multiple=True).connect(
         "add", lambda sel: sel.annotation.draggable(False))
-    #plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
+    plt.title(f'CHARACTERSTIC CURVE FOR {diode_name.get()}')
     plt.xlabel('Vd(volts)')
     plt.ylabel('Id(amperes)')
     plt.legend()
     plt.show()
-
+    #return vt
+def planckcalc():
+    f=int(frequency.get())
+    ev=vt*1.6*(10**-19)
+    h=ev/f
+    print("Calculated Planck constant", h)
 root=Tk()
 
 
 root.title("WELCOME TO CURVE TRACER FOR DIODES ")
 diode_name=tk.StringVar()
+frequency=tk.StringVar()
 #rd=tk.StringVar()
 name_label=ttk.Label(root, text='Enter Diode Name:')
 name_label.pack(side='left', padx=(0,10))
 name_entry=ttk.Entry(root,width=15,textvariable=diode_name)
 name_entry.pack(side='left')
 name_entry.focus()
-start_button=ttk.Button(root,text="start",command=start)
-start_button.pack(side='left', fill='x',expand=True)
+start_button=ttk.Button(root,text="start", command=start)
+start_button.pack(side='left', fill='x', expand=True)
 popup("Don't act oversmart and ruin everything, instead follow the sequence of buttons. After Pressing start button wait for a popup to proceed! ")
 convert_button=ttk.Button(root,text="convert",command=convert)
 convert_button.pack(side='left', fill='x',expand=True)
 plot_button=ttk.Button(root,text="plot",command=plotg)
 plot_button.pack(side='left', fill='x',expand=True)
+value_label=ttk.Label(root, text='Enter Frequency of light in Hz:')
+value_label.pack(side='top', padx=(0,10))
+value_entry=ttk.Entry(root,width=15,textvariable=frequency)
+value_entry.pack(side='top')
+#value_entry.focus()
+planck_button=ttk.Button(root,text="verify planck",command=planckcalc)
+planck_button.pack(side='top', fill='x',expand=True)
 quit_button=ttk.Button(root,text='kill',command=root.destroy)
 quit_button.pack(side='left', fill='x',expand=True)
 """T = tk.Text(root, height=4, width=50)
