@@ -14,11 +14,19 @@ import mplcursors
 from tqdm import tqdm_gui
 from scipy.misc import derivative
 vt=29
+def popup(message1):
+    window= Tk()
+    messagebox.showinfo('System Message', f'{message1}')
+
+    window.deiconify()
+    window.destroy()
+
 def planckcalc():
     f=int(frequency.get())
     ev=vt*1.6*(10**-19)
     h=ev/f
     print("Calculated Planck constant", h)
+    popup(f"hi{h}, bye{ev}")
 
 root=Tk()
 frequency=tk.StringVar()

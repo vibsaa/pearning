@@ -15,7 +15,7 @@ from tqdm import tqdm_gui
 from scipy.misc import derivative
 vt=0
 def start():
-    ser=serial.Serial('COM4', baudrate=9600, timeout=1)
+    ser=serial.Serial(COM.get(), baudrate=9600, timeout=1)
     i=0
     ser.write(b's')
     data1=open('points.txt','w')
@@ -80,10 +80,13 @@ def plotg():
         slope=(points[-1][1]-points[0][1])/(points[-1][0]-points[0][0])
         rd=1/slope
         vt=points[0][0]-(points[0][1]/slope)
-        #print('onpick points:', points)
+        
+
+        print('onpick points:', points)
         print('slope:', slope)
         print('Dynamic resistance:', rd)
         print('Threshold voltage:', vt)
+        popup(f"slope:{slope} , Dynamic resistance:{rd} , Threshold voltage:{vt} ")
         #return vt
     x,y = np.loadtxt('datapoints.txt',
                     unpack=True,
@@ -96,7 +99,8 @@ def plotg():
     print(fitcoeffs)
 
 
-    xFit = np.arange(0.0, 3.5, 0.01) #PUT MAX VALUE OF RANGE =1.2 FOR 1N4007 &=.53 FOR IN5819 &=3.5 for LED
+    xFit = np.arange(0.0, float(Rangelimit.get()), 0.01) 
+
     popt, pcov = curve_fit(func, x, y)
     print(popt)
     #Plot the fitted function 
@@ -115,34 +119,55 @@ def planckcalc():
     ev=vt*1.6*(10**-19)
     h=ev/f
     print("Calculated Planck constant", h)
+    popup(f"Calculated planck constant is:{h}")
 root=Tk()
 
 
 root.title("WELCOME TO CURVE TRACER FOR DIODES ")
 diode_name=tk.StringVar()
 frequency=tk.StringVar()
+COM=tk.StringVar()
+Rangelimit=tk.StringVar()
 #rd=tk.StringVar()
+COM_label=ttk.Label(root, text='Enter COM Port in COMx Format')
+COM_label.grid(row=0, column=0,sticky = W, pady = 2)
+COM_entry=ttk.Entry(root,width=15,textvariable=COM)
+COM_entry.grid(row=0, column=1)
+COM_entry.focus()
+range_label=ttk.Label(root, text='Enter Curve Fit Range')
+range_label.grid(row=2, column=0,sticky = W, pady = 2)
+range_entry=ttk.Entry(root,width=15,textvariable=Rangelimit)
+range_entry.grid(row=2, column=1)
+
 name_label=ttk.Label(root, text='Enter Diode Name:')
-name_label.pack(side='left', padx=(0,10))
+name_label.grid(row=4, column=0,sticky = W, pady = 2)
 name_entry=ttk.Entry(root,width=15,textvariable=diode_name)
-name_entry.pack(side='left')
-name_entry.focus()
+name_entry.grid(row=4, column=1)
+#name_entry.focus()
+
 start_button=ttk.Button(root,text="start", command=start)
-start_button.pack(side='left', fill='x', expand=True)
+start_button.grid(row=0, column=2, rowspan=5,sticky = tk.N+tk.S)
+
 popup("Don't act oversmart and ruin everything, instead follow the sequence of buttons. After Pressing start button wait for a popup to proceed! ")
+
 convert_button=ttk.Button(root,text="convert",command=convert)
-convert_button.pack(side='left', fill='x',expand=True)
+convert_button.grid(row=0, column=3, rowspan=5,sticky = tk.N+tk.S)
+
 plot_button=ttk.Button(root,text="plot",command=plotg)
-plot_button.pack(side='left', fill='x',expand=True)
+plot_button.grid(row=0, column=4, rowspan=5,sticky = tk.N+tk.S)
+
 value_label=ttk.Label(root, text='Enter Frequency of light in Hz:')
-value_label.pack(side='top', padx=(0,10))
+value_label.grid(row=0, column=6)
 value_entry=ttk.Entry(root,width=15,textvariable=frequency)
-value_entry.pack(side='top')
+value_entry.grid(row=0, column=7)
+
 #value_entry.focus()
+
 planck_button=ttk.Button(root,text="verify planck",command=planckcalc)
-planck_button.pack(side='top', fill='x',expand=True)
+planck_button.grid(row=2, column=6, columnspan=2,sticky = tk.E+tk.W)
+
 quit_button=ttk.Button(root,text='kill',command=root.destroy)
-quit_button.pack(side='left', fill='x',expand=True)
+quit_button.grid(row=4, column=6, columnspan=2,sticky = tk.E+tk.W)
 """T = tk.Text(root, height=4, width=50)
 T.pack(side=tk.LEFT, fill=tk.Y)
 quote = f"value of dynamic resistance is{rd}"
