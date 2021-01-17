@@ -20,10 +20,14 @@ def start():
     ser.write(b's')
     data1=open('points.txt','w')
     #while(i<240):
-    for i in tqdm_gui(range(0,255)):
+    for i in tqdm_gui(range(0,241)):              #this way of reading the values from the serial port is wrong
+        avrdata=ser.readline().decode('ascii')    #the method is rectified in future versions of the project.
+        data1.write(avrdata)                      #the used method is wrong because instead of polling the serial port when data is available 
+        i=i+1                                     #it polls with the loop iteration. same problem is with all the previous versions.
+    '''while(i<240):
         avrdata=ser.readline().decode('ascii')
         data1.write(avrdata)
-        i=i+1
+        i=i+1'''
     data1.close()
     popup("Reading process is finished, please proceed!")
     
@@ -52,8 +56,8 @@ def convert():
         vdadc=int(data_sep[0])
         idadc=int(data_sep[1])
         #print(f" {vdadc} , {idadc} ")
-        voltage=round(vdadc*.00654, 3)
-        current=round(((idadc*.00654)/6.67)/4.7, 3)
+        voltage=vdadc*.00654
+        current=((idadc*.00654)/6.67)/4.7
         #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")d
         csv_val=','.join([str(voltage),str(current)])
         csv_op=open('datapoints.txt','a')
@@ -99,7 +103,7 @@ def plotg():
     print(fitcoeffs)
 
 
-    xFit = np.arange(0.0, float(Rangelimit.get()), 0.01) 
+    xFit = np.arange(0.0, float(Rangelimit.get()) , 0.01) #float(Rangelimit.get())
 
     popt, pcov = curve_fit(func, x, y)
     print(popt)

@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from matplotlib import style
 from scipy.optimize import curve_fit
 import numpy as np
-from scipy import polyfit
+#from scipy import polyfit
 from matplotlib.widgets import Cursor
 import mplcursors
 

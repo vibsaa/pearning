@@ -1,6 +1,7 @@
 import serial
 import time
 import tkinter as tk
+from tkinter.ttk import *
 from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox
@@ -13,19 +14,29 @@ from matplotlib.widgets import Cursor
 import mplcursors
 from tqdm import tqdm_gui
 from scipy.misc import derivative
+import fileinput
 vt=0
+phrase='DONE'
 def start():
     ser=serial.Serial(COM.get(), baudrate=9600, timeout=1)
-    i=0
-    ser.write(b's')
     data1=open('points.txt','w')
-    #while(i<240):
-    for i in tqdm_gui(range(0,241)):
-        avrdata=ser.readline().decode('ascii')
-        data1.write(avrdata)
-        i=i+1
+    avrdata=0
+    progress['value']=0
+    root.update_idletasks()
+    ser.write(b's')
+
+    while (avrdata !='DONE'):
+        if(ser.in_waiting>0):
+            avrdata=ser.readline().decode('ascii')
+            data1.write(avrdata)
+
+    progress['value']=100
+    root.update_idletasks()    
+
     data1.close()
-    popup("Reading process is finished, please proceed!")
+    #popup("Reading process is finished, please proceed!")
+    
+    
     
 
 def popup(message1):
@@ -38,6 +49,10 @@ def popup(message1):
     
 
 def convert():
+    for line in fileinput.input('points.txt', inplace=True):
+        if phrase in line:
+            continue
+        print(line, end='')
     csv_data=open('points.txt','r')
     lines=csv_data.readlines()
     csv_data.close()
@@ -52,8 +67,8 @@ def convert():
         vdadc=int(data_sep[0])
         idadc=int(data_sep[1])
         #print(f" {vdadc} , {idadc} ")
-        voltage=vdadc*.00654
-        current=((idadc*.00654)/6.67)/4.7
+        voltage=round(vdadc*.00654, 3)
+        current=round(((idadc*.00654)/6.67)/4.7, 3)
         #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")d
         csv_val=','.join([str(voltage),str(current)])
         csv_op=open('datapoints.txt','a')
@@ -99,7 +114,7 @@ def plotg():
     print(fitcoeffs)
 
 
-    xFit = np.arange(0.0, float(Rangelimit.get()), 0.01) 
+    xFit = np.arange(0.0, float(Rangelimit.get()) , 0.01) #float(Rangelimit.get())
 
     popt, pcov = curve_fit(func, x, y)
     print(popt)
@@ -139,8 +154,13 @@ range_label.grid(row=2, column=0,sticky = W, pady = 2)
 range_entry=ttk.Entry(root,width=15,textvariable=Rangelimit)
 range_entry.grid(row=2, column=1)
 
+
 name_label=ttk.Label(root, text='Enter Diode Name:')
 name_label.grid(row=4, column=0,sticky = W, pady = 2)
+
+progress = Progressbar(root, orient = HORIZONTAL, 
+			length = 100, mode = 'determinate') 
+progress.grid(row=6, column=0, columnspan=6, sticky = tk.E+tk.W, pady = 2)
 name_entry=ttk.Entry(root,width=15,textvariable=diode_name)
 name_entry.grid(row=4, column=1)
 #name_entry.focus()
