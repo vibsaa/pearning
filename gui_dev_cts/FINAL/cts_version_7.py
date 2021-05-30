@@ -74,11 +74,11 @@ def convert():
         idadc=int(data_sep[1])
         #print(f" {vdadc} , {idadc} ")
         voltage=round(vdadc*.00654, 3)
-        current=round(((idadc*.00654)/6.67)/4.7, 3)
+        current=round((idadc*.00654)/4.7, 3)
         #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")d
 
 
-        current_log=np.log(round(((idadc*.00654)/6.67)/4.7, 3))
+        current_log=np.log(round((idadc*.00654)/4.7, 3))
         csv_val=','.join([str(voltage),str(current)])
         csv_log_data=','.join([str(voltage),str(current_log)])
         csv_op=open('datapoints.txt','a')
