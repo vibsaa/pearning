@@ -8,3 +8,11 @@ the graph
 
 in the same file or v7 file use the obtained fit parameters to obtain the 
 linear fit in the ac data pointrs graph
+
+
+************************************PART-II*******************************************************
+import the datapoints in the points.txt file.
+just run data_cleaning.py file :
+    1. it will first obtain datapoints.txt and logpoints.txt
+    2. the will remove -inf points from logpoints 
+    3. the plot both graph in the same window and give eta value

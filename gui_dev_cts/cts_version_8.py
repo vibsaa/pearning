@@ -20,12 +20,12 @@ vt=0
 phrase='DONE'
 coord = []
 def start():
-    ser=serial.Serial(COM.get(), baudrate=9600, timeout=1)
+    ser=serial.Serial(COM.get(), baudrate=115200, timeout=1)
     data1=open('points.txt','w')
     avrdata=0
     progress['value']=0
     root.update_idletasks()
-    ser.write(b's')
+    ser.write(b'D')
 
     while (avrdata !='DONE'):
         if(ser.in_waiting>0):
@@ -34,7 +34,7 @@ def start():
 
     progress['value']=100
     root.update_idletasks()    
-
+    ser.close()
     data1.close()
     #popup("Reading process is finished, please proceed!")
     
@@ -47,6 +47,7 @@ def popup(message1):
 
     window.deiconify()
     window.destroy()
+
 def convert():
     for line in fileinput.input('points.txt', inplace=True):
         if phrase in line:
@@ -74,12 +75,12 @@ def convert():
         vdadc=int(data_sep[0])
         idadc=int(data_sep[1])
         #print(f" {vdadc} , {idadc} ")
-        voltage=round(vdadc*.00654, 3)
-        current=round((idadc*.00654)/4.7, 3)
+        voltage=round((vdadc*3.3)/4096, 3)
+        current=round((idadc*2*3.3)/409600, 3)   # current value calculation from 12bit adc, the factor of two is there because there is a divider in the circuit
         #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")d
 
 
-        current_log=np.log(round((idadc*.00654)/4.7, 3))
+        current_log=np.log(current)
         csv_val=','.join([str(voltage),str(current)])
         csv_log_data=','.join([str(voltage),str(current_log)])
         csv_op=open('datapoints.txt','a')
@@ -111,7 +112,7 @@ def plotg():
     
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', np.RankWarning)
-        p20 = np.poly1d(np.polyfit(x, y, 20))
+        p20 = np.poly1d(np.polyfit(x, y, 10))
     
     #l = np.polyfit(x_log, y_log, 1)
 
@@ -119,7 +120,7 @@ def plotg():
     print(p20(69))
     #xp=np.linspace(-4.5,float(Rangelimit.get()),180)
     
-    xp=np.linspace(0.04,float(Rangelimit.get()),180)
+    xp=np.linspace(0.3,float(Rangelimit.get()),180)
     ax.plot(x, y, '.',label='experimetal data')
     ax.plot( xp, p20(xp), 'r', label='fitted data')
     # Defining the cursor

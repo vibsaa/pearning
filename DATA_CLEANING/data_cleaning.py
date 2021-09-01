@@ -17,7 +17,36 @@ from scipy.misc import derivative
 import fileinput
 import warnings
 phrase='DONE'
-'''def convert():
+def start():
+    ser=serial.Serial(COM.get(), baudrate=115200, timeout=1)
+    data1=open('points.txt','w')
+    avrdata=0
+    progress['value']=0
+    root.update_idletasks()
+    ser.write(b'D')
+
+    while (avrdata !='DONE'):
+        if(ser.in_waiting>0):
+            avrdata=ser.readline().decode('ascii')
+            data1.write(avrdata)
+
+    progress['value']=100
+    root.update_idletasks()    
+    ser.close()
+    data1.close()
+    #popup("Reading process is finished, please proceed!")
+    
+    
+    
+
+def popup(message1):
+    window= Tk()
+    messagebox.showinfo('System Message', f'{message1}')
+
+    window.deiconify()
+    window.destroy()
+
+def convert():
     for line in fileinput.input('points.txt', inplace=True):
         if phrase in line:
             continue
@@ -30,32 +59,57 @@ phrase='DONE'
     #print(lines)
     csv_op=open('datapoints.txt','w')
     csv_op.close()
+    csv_log=open('logpoints.txt','w')
+    csv_log.close()
 
     
     res = []
     [res.append(x) for x in lines if x not in res]
-    
-
+  
         # printing list after removal 
     #print ("The list after removing duplicates : " + str(res))
-    
     for line in res:
         data_sep=line.split(',')
         vdadc=int(data_sep[0])
         idadc=int(data_sep[1])
-        #print(vdadc)
         #print(f" {vdadc} , {idadc} ")
-        voltage=round(vdadc*.00654, 3)
-        current=np.log(round(((idadc*.00654)/6.67)/4.7, 3))
+        voltage=round((vdadc*3.3)/4096, 3)
+        current=round((idadc*2*3.3)/409600, 3)   # current value calculation from 12bit adc, the factor of two is there because there is a divider in the circuit
         #print(f"the v value is {voltage:.3f} and i value is {current:.3f} ")d
-        #print(voltage)
-        print(current)
+
+
+        current_log=np.log(current)
         csv_val=','.join([str(voltage),str(current)])
+        csv_log_data=','.join([str(voltage),str(current_log)])
         csv_op=open('datapoints.txt','a')
         #print(csv_val)
         csv_op.write(f"{csv_val}\n")
-        csv_op.close()'''
+        csv_op.close()
+        csv_log=open('logpoints.txt','a')
+        csv_log.write(f"{csv_log_data}\n")
+        csv_log.close()
+
+    csv_log=open('logpoints.txt','r+')
+    lines_log=csv_log.readlines()
+    lines_log=[line.strip() for line in lines_log]
+    print(type(lines_log))
+    csv_log.close()
+    csv_log=open('logpoints.txt','w')  # to clear the file contents
+    csv_log.close()
+    for line in lines_log:
+        data_sep=line.split(',')
+        vd=float(data_sep[0])
+        idlog=float(data_sep[1])
+        if (idlog==-math.inf):
+            continue 
+        csv_log_data=','.join([str(vd),str(idlog)])
+        csv_log=open('logpoints.txt','a')
+        csv_log.write(f"{csv_log_data}\n")
+        csv_log.close()
 coord = []
+eta=0.0
+
+
 def plotg():
     
     e=2.718
@@ -74,20 +128,22 @@ def plotg():
     
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', np.RankWarning)
-        p20 = np.poly1d(np.polyfit(x, y, 20))
+        p20 = np.poly1d(np.polyfit(x, y, 10))   #define polynomial fit order here 
 
     p = np.polyfit(x_log, y_log, 1)
 
     print(p)
-    xlp=np.linspace(0.08,1.126,180)  #V vs ln(I) curve fitting
+    eta=round(1000/(p[0]*26),2)
+    print(eta)
+    xlp=np.linspace(0.3,0.678,180)  #V vs ln(I) curve fitting
 
     F=(math.exp(p[1]))*(e**(p[0]*xlp))
     ax.plot(x, y, '.',label='experimetal data')
     #ax.plot(x_log, y_log, '+',label='log data')
-    xp=np.linspace(0.192,1.126,180)   #V vs I curve fitting
+    xp=np.linspace(0.3,.678,180)   #V vs I curve fitting
     
     ax.plot(xlp, F, 'g',label='linear fit')
-    ax.plot( xp, p20(xp), 'r', label='20th order fit')
+    ax.plot( xp, p20(xp), 'r', label='10th order polynomial fit')
     # Defining the cursor
     cursor = Cursor(ax, horizOn=True, vertOn=True, useblit=True,
                 color = 'b', linewidth = .5)
@@ -117,5 +173,5 @@ def plotg():
     plt.show()
     plt.show()
 
-#convert()
+convert()
 plotg()

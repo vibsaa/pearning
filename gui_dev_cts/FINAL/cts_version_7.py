@@ -24,7 +24,7 @@ def start():
     avrdata=0
     progress['value']=0
     root.update_idletasks()
-    ser.write(b's')
+    ser.write(b'D')
 
     while (avrdata !='DONE'):
         if(ser.in_waiting>0):
